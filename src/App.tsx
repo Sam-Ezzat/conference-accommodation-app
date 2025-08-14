@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ErrorBoundary } from './components/ui/ErrorBoundary'
 import { ToastContainer, useToast } from './components/ui/Toast'
 import { Layout } from './components/layout/Layout'
+import { AuthGuard } from './components/auth/AuthGuard'
 import { Dashboard } from './pages/Dashboard'
 import { Events } from './pages/Events'
 import { Accommodations } from './pages/Accommodations'
@@ -12,6 +13,9 @@ import { FormBuilder } from './pages/FormBuilder'
 import { Transportation } from './pages/Transportation'
 import { Communication } from './pages/Communication'
 import { Reports } from './pages/Reports'
+import { Login } from './pages/Login'
+import { Register } from './pages/Register'
+import { ForgotPassword } from './pages/ForgotPassword'
 import './styles/globals.css'
 
 // Create a client
@@ -41,20 +45,84 @@ function AppContent() {
     <>
       <Router>
         <ErrorBoundary>
-          <Layout>
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/events/*" element={<Events />} />
-              <Route path="/accommodations/*" element={<Accommodations />} />
-              <Route path="/attendees/*" element={<Attendees />} />
-              <Route path="/assignments/*" element={<Assignments />} />
-              <Route path="/form-builder/*" element={<FormBuilder />} />
-              <Route path="/transportation/*" element={<Transportation />} />
-              <Route path="/communication/*" element={<Communication />} />
-              <Route path="/reports/*" element={<Reports />} />
-            </Routes>
-          </Layout>
+          <Routes>
+            {/* Auth routes - without Layout */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            
+            {/* Protected routes with AuthGuard and Layout */}
+            <Route path="/" element={
+              <AuthGuard>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </AuthGuard>
+            } />
+            <Route path="/dashboard" element={
+              <AuthGuard>
+                <Layout>
+                  <Dashboard />
+                </Layout>
+              </AuthGuard>
+            } />
+            <Route path="/events/*" element={
+              <AuthGuard>
+                <Layout>
+                  <Events />
+                </Layout>
+              </AuthGuard>
+            } />
+            <Route path="/accommodations/*" element={
+              <AuthGuard>
+                <Layout>
+                  <Accommodations />
+                </Layout>
+              </AuthGuard>
+            } />
+            <Route path="/attendees/*" element={
+              <AuthGuard>
+                <Layout>
+                  <Attendees />
+                </Layout>
+              </AuthGuard>
+            } />
+            <Route path="/assignments/*" element={
+              <AuthGuard>
+                <Layout>
+                  <Assignments />
+                </Layout>
+              </AuthGuard>
+            } />
+            <Route path="/form-builder/*" element={
+              <AuthGuard>
+                <Layout>
+                  <FormBuilder />
+                </Layout>
+              </AuthGuard>
+            } />
+            <Route path="/transportation/*" element={
+              <AuthGuard>
+                <Layout>
+                  <Transportation />
+                </Layout>
+              </AuthGuard>
+            } />
+            <Route path="/communication/*" element={
+              <AuthGuard>
+                <Layout>
+                  <Communication />
+                </Layout>
+              </AuthGuard>
+            } />
+            <Route path="/reports/*" element={
+              <AuthGuard>
+                <Layout>
+                  <Reports />
+                </Layout>
+              </AuthGuard>
+            } />
+          </Routes>
         </ErrorBoundary>
       </Router>
       <ToastContainer toasts={toasts} onRemove={removeToast} />

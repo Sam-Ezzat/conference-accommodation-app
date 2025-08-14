@@ -4,7 +4,6 @@ import {
   Attendee, 
   Room, 
   Accommodation, 
-  Building, 
   User 
 } from '@/types/entities'
 import { 
@@ -68,10 +67,55 @@ class ApiClient {
 
   // Authentication
   async login(credentials: LoginCredentials): Promise<AuthResponse> {
-    const response = await this.client.post<ApiResponse<AuthResponse>>('/auth/login', credentials)
+    // Mock API response for demo purposes
+    if ((credentials.username === 'admin' && credentials.password === 'admin123') ||
+        (credentials.username === 'organizer' && credentials.password === 'org123')) {
+      
+      const mockUser: User = {
+        id: '1',
+        username: credentials.username,
+        email: `${credentials.username}@example.com`,
+        firstName: credentials.username === 'admin' ? 'Admin' : 'Event',
+        lastName: credentials.username === 'admin' ? 'User' : 'Organizer',
+        role: credentials.username === 'admin' ? 'admin' : 'organizer',
+        organizationId: '1',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+
+      const mockResponse: AuthResponse = {
+        token: `mock-token-${Date.now()}`,
+        refreshToken: `mock-refresh-${Date.now()}`,
+        user: mockUser,
+        expiresIn: 3600
+      }
+
+      this.token = mockResponse.token
+      localStorage.setItem('auth_token', mockResponse.token)
+      return mockResponse
+    } else {
+      throw new Error('Invalid credentials')
+    }
+
+    // Real API call (commented out for demo)
+    // const response = await this.client.post<ApiResponse<AuthResponse>>('/auth/login', credentials)
+    // const authData = await this.handleResponse(response)
+    // this.token = authData.token
+    // localStorage.setItem('auth_token', authData.token)
+    // return authData
+  }
+
+  async register(userData: {
+    firstName: string
+    lastName: string
+    username: string
+    email: string
+    password: string
+    organizationName: string
+    role: string
+  }): Promise<AuthResponse> {
+    const response = await this.client.post<ApiResponse<AuthResponse>>('/auth/register', userData)
     const authData = await this.handleResponse(response)
-    this.token = authData.token
-    localStorage.setItem('auth_token', authData.token)
     return authData
   }
 

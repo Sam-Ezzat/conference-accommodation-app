@@ -60,6 +60,22 @@ export const loginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters')
 })
 
+// Register validation schema
+export const registerSchema = z.object({
+  firstName: z.string().min(2, 'First name must be at least 2 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters'),
+  username: z.string().min(3, 'Username must be at least 3 characters'),
+  email: z.string().email('Please enter a valid email address'),
+  password: z.string().min(8, 'Password must be at least 8 characters'),
+  confirmPassword: z.string(),
+  organizationName: z.string().min(2, 'Organization name must be at least 2 characters'),
+  role: z.enum(['organizer', 'assistant', 'viewer'], { required_error: 'Role is required' }),
+  agreeToTerms: z.boolean().refine(val => val === true, 'You must agree to the terms and conditions')
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+})
+
 // Assignment validation
 export const assignmentSchema = z.object({
   attendeeId: z.string().min(1, 'Attendee ID is required'),
@@ -72,4 +88,5 @@ export type CreateRoomInput = z.infer<typeof createRoomSchema>
 export type CreateBuildingInput = z.infer<typeof createBuildingSchema>
 export type CreateAccommodationInput = z.infer<typeof createAccommodationSchema>
 export type LoginInput = z.infer<typeof loginSchema>
+export type RegisterInput = z.infer<typeof registerSchema>
 export type AssignmentInput = z.infer<typeof assignmentSchema>
