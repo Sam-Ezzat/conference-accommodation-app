@@ -7,10 +7,26 @@ import { Badge } from '@/components/ui/badge'
 import { Plus, User, Search, Filter } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 
+interface LocalAttendee {
+  id: string
+  firstName: string
+  lastName: string
+  gender: 'male' | 'female'
+  age?: number
+  region?: string
+  email?: string
+  church?: string
+  isLeader: boolean
+  isElderly: boolean
+  isVIP: boolean
+  eventId: string
+  status: string
+}
+
 export function Attendees() {
   const [showCreateForm, setShowCreateForm] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
-  const [attendees, setAttendees] = useState([
+  const [attendees, setAttendees] = useState<LocalAttendee[]>([
     {
       id: '1',
       firstName: 'John',
@@ -22,6 +38,8 @@ export function Attendees() {
       church: 'Faith Community Church',
       isLeader: true,
       isElderly: false,
+      isVIP: false,
+      eventId: '1',
       status: 'Registered'
     },
     {
@@ -35,6 +53,8 @@ export function Attendees() {
       church: 'Grace Methodist Church',
       isLeader: false,
       isElderly: true,
+      isVIP: true,
+      eventId: '1',
       status: 'Registered'
     }
   ])
@@ -42,9 +62,19 @@ export function Attendees() {
   const handleCreateAttendee = (data: CreateAttendeeInput) => {
     console.log('Creating attendee:', data)
     // In a real app, make API call here
-    const newAttendee = {
+    const newAttendee: LocalAttendee = {
       id: Date.now().toString(),
-      ...data,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      gender: data.gender,
+      age: data.age,
+      region: data.region,
+      email: data.email,
+      church: data.church,
+      isLeader: data.isLeader,
+      isElderly: data.isElderly,
+      isVIP: data.isVIP,
+      eventId: data.eventId,
       status: 'Registered'
     }
     setAttendees([...attendees, newAttendee])
@@ -154,6 +184,9 @@ export function Attendees() {
                 )}
                 {attendee.isElderly && (
                   <Badge variant="outline" className="text-xs">Elderly</Badge>
+                )}
+                {attendee.isVIP && (
+                  <Badge variant="outline" className="text-xs bg-purple-100 text-purple-800 border-purple-300">VIP</Badge>
                 )}
               </div>
 

@@ -56,6 +56,8 @@ export interface CreateAttendeeRequest {
   email?: string
   isLeader?: boolean
   isElderly?: boolean
+  isVIP?: boolean
+  eventId: string
   specialRequests?: string
   preferences?: {
     preferredAttendeeId?: string
@@ -70,6 +72,7 @@ export interface CreateRoomRequest {
   genderType: import('./entities').GenderType
   floor: number
   isGroundFloorSuitable?: boolean
+  isVIP?: boolean
   notes?: string
 }
 
@@ -108,6 +111,7 @@ export interface AttendeeFilters {
   assigned?: boolean
   isLeader?: boolean
   isElderly?: boolean
+  isVIP?: boolean
 }
 
 export interface RoomFilters {
@@ -115,6 +119,7 @@ export interface RoomFilters {
   genderType?: import('./entities').GenderType
   floor?: number
   available?: boolean
+  isVIP?: boolean
   capacity?: {
     min?: number
     max?: number
@@ -169,4 +174,53 @@ export interface ConflictUpdateMessage extends WebSocketMessage {
   data: {
     conflicts: import('./dragDrop').AssignmentConflict[]
   }
+}
+
+// User Management Types
+export interface CreateUserRequest {
+  username: string
+  email: string
+  firstName: string
+  lastName: string
+  password: string
+  role: import('./entities').UserRole
+  organizationId?: string
+  phoneNumber?: string
+  permissions?: string[]
+}
+
+export interface UpdateUserRequest {
+  username?: string
+  email?: string
+  firstName?: string
+  lastName?: string
+  role?: import('./entities').UserRole
+  isActive?: boolean
+  phoneNumber?: string
+  permissions?: string[]
+}
+
+export interface UserFilters {
+  search?: string
+  role?: import('./entities').UserRole
+  organizationId?: string
+  isActive?: boolean
+  createdAfter?: string
+  createdBefore?: string
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string
+  newPassword: string
+  confirmPassword: string
+}
+
+export interface ResetPasswordRequest {
+  email: string
+}
+
+export interface BulkUserAction {
+  userIds: string[]
+  action: 'activate' | 'deactivate' | 'delete' | 'changeRole'
+  newRole?: import('./entities').UserRole
 }

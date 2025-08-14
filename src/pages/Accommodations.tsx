@@ -21,6 +21,22 @@ import {
   XCircle,
   AlertCircle
 } from 'lucide-react'
+import { GenderType } from '@/types/entities'
+
+// Local interface for mock room data
+interface LocalRoom {
+  id: string
+  buildingId: string
+  number: string
+  capacity: number
+  genderType: GenderType
+  floor: number
+  isAvailable: boolean
+  isGroundFloorSuitable: boolean
+  isVIP: boolean
+  currentOccupants: number
+  notes?: string
+}
 
 export function Accommodations() {
   const [showAddAccommodation, setShowAddAccommodation] = useState(false)
@@ -86,7 +102,7 @@ export function Accommodations() {
     }
   ])
 
-  const [rooms, setRooms] = useState([
+  const [rooms, setRooms] = useState<LocalRoom[]>([
     {
       id: '1',
       buildingId: '1',
@@ -96,6 +112,7 @@ export function Accommodations() {
       floor: 1,
       isAvailable: true,
       isGroundFloorSuitable: true,
+      isVIP: false,
       currentOccupants: 3,
       notes: 'Near elevator'
     },
@@ -108,6 +125,7 @@ export function Accommodations() {
       floor: 1,
       isAvailable: false,
       isGroundFloorSuitable: true,
+      isVIP: true,
       currentOccupants: 2,
       notes: 'Quiet room'
     },
@@ -120,6 +138,7 @@ export function Accommodations() {
       floor: 2,
       isAvailable: true,
       isGroundFloorSuitable: false,
+      isVIP: true,
       currentOccupants: 4,
       notes: 'Family suite with kitchen'
     }
@@ -127,7 +146,7 @@ export function Accommodations() {
 
   const [newAccommodation, setNewAccommodation] = useState({
     name: '',
-    type: 'hotel' as const,
+    type: 'hotel' as 'hotel' | 'house',
     address: '',
     contactPerson: '',
     contactPhone: ''
@@ -143,10 +162,11 @@ export function Accommodations() {
   const [newRoom, setNewRoom] = useState({
     number: '',
     capacity: '',
-    genderType: 'male' as const,
+    genderType: 'male' as 'male' | 'female' | 'mixed' | 'family',
     floor: '',
     buildingId: '',
     isGroundFloorSuitable: false,
+    isVIP: false,
     notes: ''
   })
 
@@ -185,7 +205,7 @@ export function Accommodations() {
 
   const handleAddRoom = () => {
     if (newRoom.number.trim() && newRoom.buildingId && newRoom.capacity) {
-      const room = {
+      const room: LocalRoom = {
         id: Date.now().toString(),
         number: newRoom.number,
         capacity: parseInt(newRoom.capacity),
@@ -194,11 +214,12 @@ export function Accommodations() {
         buildingId: newRoom.buildingId,
         isAvailable: true,
         isGroundFloorSuitable: newRoom.isGroundFloorSuitable,
+        isVIP: newRoom.isVIP,
         currentOccupants: 0,
         notes: newRoom.notes
       }
       setRooms([...rooms, room])
-      setNewRoom({ number: '', capacity: '', genderType: 'male', floor: '', buildingId: '', isGroundFloorSuitable: false, notes: '' })
+      setNewRoom({ number: '', capacity: '', genderType: 'male', floor: '', buildingId: '', isGroundFloorSuitable: false, isVIP: false, notes: '' })
       setShowAddRoom(false)
     }
   }
@@ -644,6 +665,16 @@ export function Accommodations() {
                     />
                     <Label htmlFor="groundFloor">Suitable for elderly (ground/first floor)</Label>
                   </div>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      id="vipRoom"
+                      type="checkbox"
+                      checked={newRoom.isVIP}
+                      onChange={(e) => setNewRoom({...newRoom, isVIP: e.target.checked})}
+                      className="rounded"
+                    />
+                    <Label htmlFor="vipRoom">VIP Room</Label>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="roomNotes">Notes</Label>
@@ -691,11 +722,18 @@ export function Accommodations() {
                       <p className="text-sm text-gray-600">
                         Occupancy: {room.currentOccupants}/{room.capacity}
                       </p>
-                      {room.isGroundFloorSuitable && (
-                        <Badge variant="outline" className="text-xs">
-                          Elderly Suitable
-                        </Badge>
-                      )}
+                      <div className="flex gap-1 flex-wrap">
+                        {room.isGroundFloorSuitable && (
+                          <Badge variant="outline" className="text-xs">
+                            Elderly Suitable
+                          </Badge>
+                        )}
+                        {room.isVIP && (
+                          <Badge variant="outline" className="text-xs bg-purple-100 text-purple-800 border-purple-300">
+                            VIP Room
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                     
                     {room.notes && (

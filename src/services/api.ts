@@ -77,7 +77,7 @@ class ApiClient {
         email: `${credentials.username}@example.com`,
         firstName: credentials.username === 'admin' ? 'Admin' : 'Event',
         lastName: credentials.username === 'admin' ? 'User' : 'Organizer',
-        role: credentials.username === 'admin' ? 'admin' : 'organizer',
+        role: credentials.username === 'admin' ? 'org_admin' : 'organizer',
         organizationId: '1',
         createdAt: new Date(),
         updatedAt: new Date()

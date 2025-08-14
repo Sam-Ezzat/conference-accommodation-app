@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import {
   DndContext,
   DragEndEvent,
@@ -17,17 +17,16 @@ import { Badge } from '@/components/ui/badge'
 import { 
   Search, 
   Filter, 
-  RotateCcw, 
   Save, 
   Users, 
   AlertTriangle,
-  Shuffle
+  Shuffle,
+  Crown
 } from 'lucide-react'
 import { Event, Attendee, Room } from '@/types/entities'
 import { AssignmentConflict } from '@/types/dragDrop'
 import { DraggableAttendee } from './DraggableAttendee'
 import { DroppableRoom } from './DroppableRoom'
-import { cn } from '@/utils/helpers'
 
 interface AssignmentBoardProps {
   event: Event
@@ -44,7 +43,6 @@ export function AssignmentBoard({
   attendees,
   rooms,
   onAssignmentChange,
-  onBulkAssignment,
   onSaveAssignments,
   onAutoAssign
 }: AssignmentBoardProps) {
@@ -63,13 +61,16 @@ export function AssignmentBoard({
     useSensor(KeyboardSensor)
   )
 
-  // Filter unassigned attendees
+  // Filter unassigned attendees and separate VIP from regular
   const unassignedAttendees = attendees.filter(
     attendee => !attendee.roomId &&
     (searchTerm === '' || 
      `${attendee.firstName} ${attendee.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()) ||
      attendee.region?.toLowerCase().includes(searchTerm.toLowerCase()))
   )
+
+  const vipAttendees = unassignedAttendees.filter(attendee => attendee.isVIP)
+  const regularAttendees = unassignedAttendees.filter(attendee => !attendee.isVIP)
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const { active } = event
@@ -120,6 +121,8 @@ export function AssignmentBoard({
   }, [onAssignmentChange])
 
   const totalAssigned = attendees.filter(a => a.roomId).length
+  const totalVIP = attendees.filter(a => a.isVIP).length
+  const assignedVIP = attendees.filter(a => a.roomId && a.isVIP).length
   const totalConflicts = conflicts.length
   const assignmentProgress = (totalAssigned / attendees.length) * 100
 
@@ -151,7 +154,7 @@ export function AssignmentBoard({
         </div>
 
         {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-4">
           <div className="bg-blue-50 p-3 rounded-lg">
             <div className="text-sm text-blue-600">Total Attendees</div>
             <div className="text-2xl font-bold text-blue-800">{attendees.length}</div>
@@ -164,9 +167,16 @@ export function AssignmentBoard({
             <div className="text-sm text-orange-600">Unassigned</div>
             <div className="text-2xl font-bold text-orange-800">{attendees.length - totalAssigned}</div>
           </div>
-          <div className="bg-purple-50 p-3 rounded-lg">
-            <div className="text-sm text-purple-600">Progress</div>
-            <div className="text-2xl font-bold text-purple-800">{Math.round(assignmentProgress)}%</div>
+          <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
+            <div className="text-sm text-purple-600 flex items-center gap-1">
+              <Crown className="h-3 w-3" />
+              VIP Status
+            </div>
+            <div className="text-lg font-bold text-purple-800">{assignedVIP}/{totalVIP}</div>
+          </div>
+          <div className="bg-indigo-50 p-3 rounded-lg">
+            <div className="text-sm text-indigo-600">Progress</div>
+            <div className="text-2xl font-bold text-indigo-800">{Math.round(assignmentProgress)}%</div>
           </div>
         </div>
 
@@ -228,22 +238,60 @@ export function AssignmentBoard({
                   {unassignedAttendees.length}
                 </Badge>
               </div>
-              <div className="space-y-2">
-                {unassignedAttendees.map((attendee) => (
-                  <DraggableAttendee
-                    key={attendee.id}
-                    attendee={attendee}
-                    isSelected={selectedAttendees.has(attendee.id)}
-                    onSelect={handleAttendeeSelect}
-                  />
-                ))}
-                {unassignedAttendees.length === 0 && (
-                  <div className="text-center py-8 text-gray-500">
-                    <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>All attendees assigned!</p>
+
+              {/* VIP Attendees Section */}
+              {vipAttendees.length > 0 && (
+                <div className="mb-6">
+                  <div className="flex items-center gap-2 mb-3 p-2 bg-purple-50 rounded-lg border border-purple-200">
+                    <Crown className="h-4 w-4 text-purple-600" />
+                    <h3 className="font-medium text-purple-800">VIP Attendees</h3>
+                    <Badge className="bg-purple-100 text-purple-800 border-purple-300">
+                      {vipAttendees.length}
+                    </Badge>
                   </div>
-                )}
-              </div>
+                  <div className="space-y-2">
+                    {vipAttendees.map((attendee) => (
+                      <DraggableAttendee
+                        key={attendee.id}
+                        attendee={attendee}
+                        isSelected={selectedAttendees.has(attendee.id)}
+                        onSelect={handleAttendeeSelect}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Regular Attendees Section */}
+              {regularAttendees.length > 0 && (
+                <div className="mb-4">
+                  <div className="flex items-center gap-2 mb-3 p-2 bg-blue-50 rounded-lg border border-blue-200">
+                    <Users className="h-4 w-4 text-blue-600" />
+                    <h3 className="font-medium text-blue-800">Regular Attendees</h3>
+                    <Badge className="bg-blue-100 text-blue-800 border-blue-300">
+                      {regularAttendees.length}
+                    </Badge>
+                  </div>
+                  <div className="space-y-2">
+                    {regularAttendees.map((attendee) => (
+                      <DraggableAttendee
+                        key={attendee.id}
+                        attendee={attendee}
+                        isSelected={selectedAttendees.has(attendee.id)}
+                        onSelect={handleAttendeeSelect}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Empty state */}
+              {unassignedAttendees.length === 0 && (
+                <div className="text-center py-8 text-gray-500">
+                  <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                  <p>All attendees assigned!</p>
+                </div>
+              )}
             </div>
           </div>
 

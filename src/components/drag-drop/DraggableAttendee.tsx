@@ -68,6 +68,11 @@ export function DraggableAttendee({
             </div>
           </div>
           <div className="flex flex-col space-y-1">
+            {attendee.isVIP && (
+              <Badge variant="outline" className="text-xs bg-purple-100 text-purple-800 border-purple-300">
+                VIP
+              </Badge>
+            )}
             {attendee.isLeader && (
               <Badge variant="secondary" className="text-xs">
                 <Crown className="h-3 w-3 mr-1" />

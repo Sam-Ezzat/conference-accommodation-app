@@ -62,6 +62,7 @@ export interface Room {
   floor: number
   isAvailable: boolean
   isGroundFloorSuitable: boolean
+  isVIP: boolean
   notes?: string
   currentOccupants: Attendee[]
   createdAt: Date
@@ -84,6 +85,7 @@ export interface Attendee {
   roomId?: string
   isLeader: boolean
   isElderly: boolean
+  isVIP: boolean
   specialRequests?: string
   registrationDate: Date
   status: AttendeeStatus
@@ -111,11 +113,17 @@ export interface User {
   lastName: string
   role: UserRole
   organizationId?: string
+  isActive: boolean
+  lastLogin?: Date
+  phoneNumber?: string
+  profileImage?: string
+  permissions: string[]
+  createdBy?: string
   createdAt: Date
   updatedAt: Date
 }
 
-export type UserRole = 'admin' | 'organizer' | 'assistant' | 'viewer'
+export type UserRole = 'super_admin' | 'org_admin' | 'organizer' | 'assistant' | 'coordinator' | 'viewer' | 'guest' | 'admin'
 
 export interface Bus {
   id: string

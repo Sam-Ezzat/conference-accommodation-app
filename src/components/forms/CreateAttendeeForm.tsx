@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { User, Save, X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { Event } from '@/types/entities'
 
 interface CreateAttendeeFormProps {
   onSubmit: (data: CreateAttendeeInput) => void
@@ -15,6 +17,8 @@ interface CreateAttendeeFormProps {
 }
 
 export function CreateAttendeeForm({ onSubmit, onCancel, isLoading }: CreateAttendeeFormProps) {
+  const [events, setEvents] = useState<Event[]>([])
+  
   const {
     register,
     handleSubmit,
@@ -24,6 +28,44 @@ export function CreateAttendeeForm({ onSubmit, onCancel, isLoading }: CreateAtte
     resolver: zodResolver(createAttendeeSchema),
     mode: 'onChange'
   })
+
+  // Load available events
+  useEffect(() => {
+    // For now, we'll use mock data. In a real app, this would fetch from API
+    const mockEvents: Event[] = [
+      {
+        id: '1',
+        name: 'Annual Conference 2025',
+        startDate: new Date('2025-08-15'),
+        endDate: new Date('2025-08-17'),
+        organizationId: 'org-1',
+        status: 'registration_open',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: '2',
+        name: 'Youth Summit 2025',
+        startDate: new Date('2025-06-10'),
+        endDate: new Date('2025-06-12'),
+        organizationId: 'org-1',
+        status: 'registration_open',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: '3',
+        name: 'Leadership Retreat 2025',
+        startDate: new Date('2025-09-20'),
+        endDate: new Date('2025-09-22'),
+        organizationId: 'org-1',
+        status: 'planning',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    ]
+    setEvents(mockEvents)
+  }, [])
 
   const handleFormSubmit = (data: CreateAttendeeInput) => {
     onSubmit(data)
@@ -157,6 +199,27 @@ export function CreateAttendeeForm({ onSubmit, onCancel, isLoading }: CreateAtte
             )}
           </div>
 
+          <div className="space-y-2">
+            <Label htmlFor="eventId">Event *</Label>
+            <select
+              id="eventId"
+              {...register('eventId')}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                errors.eventId ? 'border-red-500' : 'border-gray-300'
+              }`}
+            >
+              <option value="">Select an event</option>
+              {events.map((event) => (
+                <option key={event.id} value={event.id}>
+                  {event.name} ({event.status === 'registration_open' ? 'Open' : event.status})
+                </option>
+              ))}
+            </select>
+            {errors.eventId && (
+              <p className="text-sm text-red-500">{errors.eventId.message}</p>
+            )}
+          </div>
+
           <div className="flex gap-4">
             <div className="flex items-center space-x-2">
               <input
@@ -176,6 +239,16 @@ export function CreateAttendeeForm({ onSubmit, onCancel, isLoading }: CreateAtte
                 className="rounded"
               />
               <Label htmlFor="isElderly">Is Elderly</Label>
+            </div>
+
+            <div className="flex items-center space-x-2">
+              <input
+                id="isVIP"
+                type="checkbox"
+                {...register('isVIP')}
+                className="rounded"
+              />
+              <Label htmlFor="isVIP">Is VIP</Label>
             </div>
           </div>
 

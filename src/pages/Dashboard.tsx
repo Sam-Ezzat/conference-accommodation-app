@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { RoleDashboard } from '@/components/dashboard/RoleDashboard'
+import { useAppStore } from '@/stores/appStore'
 import { 
   Calendar,
   Users, 
@@ -24,6 +26,8 @@ import { useNavigate } from 'react-router-dom'
 
 export function Dashboard() {
   const navigate = useNavigate()
+  const { user } = useAppStore()
+  const [showRoleDashboard, setShowRoleDashboard] = useState(false)
   const [stats] = useState({
     totalEvents: 3,
     activeEvents: 1,
@@ -185,15 +189,39 @@ export function Dashboard() {
           <h1 className="text-3xl font-bold">Conference Accommodation Dashboard</h1>
           <p className="text-gray-600 mt-2">Welcome back! Here's what's happening with your events.</p>
         </div>
-        <Badge variant="outline" className="px-3 py-1">
-          <Activity className="h-4 w-4 mr-2" />
-          System Active
-        </Badge>
+        <div className="flex items-center space-x-3">
+          <Button 
+            variant={showRoleDashboard ? "outline" : "default"}
+            size="sm"
+            onClick={() => setShowRoleDashboard(false)}
+          >
+            Classic View
+          </Button>
+          <Button 
+            variant={showRoleDashboard ? "default" : "outline"}
+            size="sm"
+            onClick={() => setShowRoleDashboard(true)}
+          >
+            Role View
+          </Button>
+          <Badge variant="outline" className="px-3 py-1">
+            <Activity className="h-4 w-4 mr-2" />
+            System Active
+          </Badge>
+        </div>
       </div>
 
-      {/* Alerts Section */}
-      {alerts.length > 0 && (
-        <div className="space-y-3">
+      {/* Role-based Dashboard */}
+      {showRoleDashboard && user?.role && (
+        <RoleDashboard userRole={user.role} />
+      )}
+
+      {/* Classic Dashboard - only show if not using role-based */}
+      {!showRoleDashboard && (
+        <>
+          {/* Alerts Section */}
+          {alerts.length > 0 && (
+            <div className="space-y-3">
           <h2 className="text-lg font-semibold">Recent Alerts</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
             {alerts.map((alert) => (
@@ -415,6 +443,8 @@ export function Dashboard() {
           </div>
         </div>
       </div>
+        </>
+      )}
     </div>
   )
 }

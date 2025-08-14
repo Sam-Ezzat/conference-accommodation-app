@@ -22,6 +22,8 @@ export const createAttendeeSchema = z.object({
   email: z.string().email('Invalid email format').optional(),
   isLeader: z.boolean().default(false),
   isElderly: z.boolean().default(false),
+  isVIP: z.boolean().default(false),
+  eventId: z.string().min(1, 'Event selection is required'),
   specialRequests: z.string().optional()
 })
 
@@ -82,6 +84,49 @@ export const assignmentSchema = z.object({
   roomId: z.string().nullable()
 })
 
+// User management validation schemas
+export const createUserSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters').max(50, 'Username must be less than 50 characters'),
+  email: z.string().email('Invalid email address'),
+  firstName: z.string().min(2, 'First name must be at least 2 characters').max(50, 'First name must be less than 50 characters'),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters').max(50, 'Last name must be less than 50 characters'),
+  password: z.string().min(6, 'Password must be at least 6 characters').max(100, 'Password must be less than 100 characters'),
+  confirmPassword: z.string(),
+  role: z.enum(['super_admin', 'org_admin', 'organizer', 'assistant', 'coordinator', 'viewer', 'guest', 'admin'], {
+    required_error: 'Role is required'
+  }),
+  organizationId: z.string().optional(),
+  phoneNumber: z.string().optional(),
+  permissions: z.array(z.string()).default([])
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"]
+})
+
+export const updateUserSchema = z.object({
+  username: z.string().min(3, 'Username must be at least 3 characters').max(50, 'Username must be less than 50 characters').optional(),
+  email: z.string().email('Invalid email address').optional(),
+  firstName: z.string().min(2, 'First name must be at least 2 characters').max(50, 'First name must be less than 50 characters').optional(),
+  lastName: z.string().min(2, 'Last name must be at least 2 characters').max(50, 'Last name must be less than 50 characters').optional(),
+  role: z.enum(['super_admin', 'org_admin', 'organizer', 'assistant', 'coordinator', 'viewer', 'guest', 'admin']).optional(),
+  isActive: z.boolean().optional(),
+  phoneNumber: z.string().optional(),
+  permissions: z.array(z.string()).optional()
+})
+
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Current password is required'),
+  newPassword: z.string().min(6, 'New password must be at least 6 characters').max(100, 'Password must be less than 100 characters'),
+  confirmPassword: z.string()
+}).refine((data) => data.newPassword === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"]
+})
+
+export const resetPasswordSchema = z.object({
+  email: z.string().email('Invalid email address')
+})
+
 export type CreateEventInput = z.infer<typeof createEventSchema>
 export type CreateAttendeeInput = z.infer<typeof createAttendeeSchema>
 export type CreateRoomInput = z.infer<typeof createRoomSchema>
@@ -90,3 +135,7 @@ export type CreateAccommodationInput = z.infer<typeof createAccommodationSchema>
 export type LoginInput = z.infer<typeof loginSchema>
 export type RegisterInput = z.infer<typeof registerSchema>
 export type AssignmentInput = z.infer<typeof assignmentSchema>
+export type CreateUserInput = z.infer<typeof createUserSchema>
+export type UpdateUserInput = z.infer<typeof updateUserSchema>
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>
+export type ResetPasswordInput = z.infer<typeof resetPasswordSchema>

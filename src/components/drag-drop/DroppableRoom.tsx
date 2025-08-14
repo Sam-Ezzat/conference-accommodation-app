@@ -4,7 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Users, MapPin, AlertCircle, X } from 'lucide-react'
-import { Room, Attendee, AssignmentConflict } from '@/types/entities'
+import { Room } from '@/types/entities'
+import { AssignmentConflict } from '@/types/dragDrop'
 import { cn, getOccupancyRate, getOccupancyColor } from '@/utils/helpers'
 
 interface DroppableRoomProps {
@@ -127,6 +128,9 @@ export function DroppableRoom({
                   <div className="text-sm font-medium">
                     {attendee.firstName} {attendee.lastName}
                   </div>
+                  {attendee.isVIP && (
+                    <Badge variant="outline" className="text-xs bg-purple-100 text-purple-800 border-purple-300">VIP</Badge>
+                  )}
                   {attendee.isLeader && (
                     <Badge variant="secondary" className="text-xs">Leader</Badge>
                   )}
@@ -161,6 +165,11 @@ export function DroppableRoom({
 
         {/* Special indicators */}
         <div className="mt-3 flex flex-wrap gap-1">
+          {room.isVIP && (
+            <Badge variant="outline" className="text-xs bg-purple-100 text-purple-800 border-purple-300">
+              VIP Room
+            </Badge>
+          )}
           {room.isGroundFloorSuitable && (
             <Badge variant="outline" className="text-xs">
               Ground Floor Suitable

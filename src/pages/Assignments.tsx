@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { AssignmentBoard } from '@/components/drag-drop/AssignmentBoard'
 import { useAppStore } from '@/stores/appStore'
-import { apiClient } from '@/services/api'
 import { Event, Attendee, Room } from '@/types/entities'
 
 export function Assignments() {
@@ -39,6 +38,7 @@ export function Assignments() {
       region: 'North',
       isLeader: true,
       isElderly: false,
+      isVIP: false,
       status: 'registered',
       preferences: [],
       registrationDate: new Date(),
@@ -55,6 +55,7 @@ export function Assignments() {
       region: 'South',
       isLeader: false,
       isElderly: true,
+      isVIP: true,
       status: 'registered',
       preferences: [],
       registrationDate: new Date(),
@@ -71,6 +72,75 @@ export function Assignments() {
       region: 'East',
       isLeader: false,
       isElderly: false,
+      isVIP: false,
+      status: 'registered',
+      preferences: [],
+      registrationDate: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: '4',
+      eventId: '1',
+      firstName: 'Dr. Sarah',
+      lastName: 'Williams',
+      gender: 'female',
+      age: 45,
+      region: 'North',
+      isLeader: true,
+      isElderly: false,
+      isVIP: true,
+      status: 'registered',
+      preferences: [],
+      registrationDate: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: '5',
+      eventId: '1',
+      firstName: 'Ambassador',
+      lastName: 'Davis',
+      gender: 'male',
+      age: 55,
+      region: 'West',
+      isLeader: true,
+      isElderly: false,
+      isVIP: true,
+      status: 'registered',
+      preferences: [],
+      registrationDate: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: '6',
+      eventId: '1',
+      firstName: 'Emma',
+      lastName: 'Brown',
+      gender: 'female',
+      age: 28,
+      region: 'South',
+      isLeader: false,
+      isElderly: false,
+      isVIP: false,
+      status: 'registered',
+      preferences: [],
+      registrationDate: new Date(),
+      createdAt: new Date(),
+      updatedAt: new Date()
+    },
+    {
+      id: '7',
+      eventId: '1',
+      firstName: 'Robert',
+      lastName: 'Miller',
+      gender: 'male',
+      age: 32,
+      region: 'East',
+      isLeader: false,
+      isElderly: false,
+      isVIP: false,
       status: 'registered',
       preferences: [],
       registrationDate: new Date(),
@@ -89,6 +159,7 @@ export function Assignments() {
       floor: 1,
       isAvailable: true,
       isGroundFloorSuitable: true,
+      isVIP: false,
       currentOccupants: [],
       createdAt: new Date(),
       updatedAt: new Date()
@@ -102,6 +173,7 @@ export function Assignments() {
       floor: 1,
       isAvailable: true,
       isGroundFloorSuitable: true,
+      isVIP: true,
       currentOccupants: [],
       createdAt: new Date(),
       updatedAt: new Date()
@@ -115,6 +187,7 @@ export function Assignments() {
       floor: 2,
       isAvailable: true,
       isGroundFloorSuitable: false,
+      isVIP: true,
       currentOccupants: [],
       createdAt: new Date(),
       updatedAt: new Date()
@@ -134,7 +207,7 @@ export function Assignments() {
       // Update local state immediately for better UX
       const updatedAttendees = attendees.map(attendee =>
         attendee.id === attendeeId 
-          ? { ...attendee, roomId }
+          ? { ...attendee, roomId: roomId || undefined }
           : attendee
       )
       
@@ -146,7 +219,7 @@ export function Assignments() {
         if (room.id === roomId) {
           const attendee = attendees.find(a => a.id === attendeeId)
           if (attendee) {
-            currentOccupants.push({ ...attendee, roomId })
+            currentOccupants.push({ ...attendee, roomId: roomId || undefined })
           }
         }
         
