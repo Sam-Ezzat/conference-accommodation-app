@@ -1,0 +1,138 @@
+2025-08-14 13:41:51:4151 [31merror[39m: [31mError in OPTIONS /api/v1/auth/login:[39m
+2025-08-15 11:17:51:1751 [31merror[39m: [31mError retrieving accommodations: [39m
+[31mInvalid `prisma.accommodation.findMany()` invocation in[39m
+[31mC:\Users\SAM-PC\Accommodation System\conference-accommodation-app\backend\src\controllers\AccommodationController.ts:65:57[39m
+
+[31m  62   return[39m
+[31m  63 }[39m
+[31m  64 [39m
+[31m→ 65 const accommodations = await prisma.accommodation.findMany({[39m
+[31m       where: {[39m
+[31m         eventId: "cmeck2lzp0004m1kplrwof018"[39m
+[31m       },[39m
+[31m       include: {[39m
+[31m         buildings: {[39m
+[31m           include: {[39m
+[31m             rooms: {[39m
+[31m               include: {[39m
+[31m                 assignments: {[39m
+[31m                 ~~~~~~~~~~~[39m
+[31m                   select: {[39m
+[31m                     id: true[39m
+[31m                   }[39m
+[31m                 },[39m
+[31m     ?           building?: true,[39m
+[31m     ?           attendees?: true,[39m
+[31m     ?           roomAssignments?: true[39m
+[31m               }[39m
+[31m             }[39m
+[31m           }[39m
+[31m         },[39m
+[31m         _count: {[39m
+[31m           select: {[39m
+[31m             buildings: true[39m
+[31m           }[39m
+[31m         }[39m
+[31m       },[39m
+[31m       orderBy: {[39m
+[31m         name: "asc"[39m
+[31m       }[39m
+[31m     })[39m
+
+[31mUnknown field `assignments` for include statement on model `Room`. Available options are marked with ?.[39m
+2025-08-16 20:43:40:4340 [31merror[39m: [31mError retrieving rooms: [39m
+[31mInvalid `prisma.room.findMany()` invocation in[39m
+[31mC:\Users\SAM-PC\Accommodation System\conference-accommodation-app\backend\src\controllers\RoomController.ts:62:39[39m
+
+[31m  59   return[39m
+[31m  60 }[39m
+[31m  61 [39m
+[31m→ 62 const rooms = await prisma.room.findMany({[39m
+[31m       where: {[39m
+[31m         building: {[39m
+[31m           accommodationId: "cmecocsof0005zbnq0op2pvu8"[39m
+[31m         }[39m
+[31m       },[39m
+[31m       include: {[39m
+[31m         building: {[39m
+[31m           select: {[39m
+[31m             id: true,[39m
+[31m             name: true,[39m
+[31m             accommodationId: true[39m
+[31m           }[39m
+[31m         },[39m
+[31m         attendees: {[39m
+[31m           select: {[39m
+[31m             id: true,[39m
+[31m             firstName: true,[39m
+[31m             lastName: true,[39m
+[31m             genderType: true,[39m
+[31m             ~~~~~~~~~~[39m
+[31m     ?       eventId?: true,[39m
+[31m     ?       gender?: true,[39m
+[31m     ?       age?: true,[39m
+[31m     ?       church?: true,[39m
+[31m     ?       region?: true,[39m
+[31m     ?       phoneNumber?: true,[39m
+[31m     ?       email?: true,[39m
+[31m     ?       roomId?: true,[39m
+[31m     ?       isLeader?: true,[39m
+[31m     ?       isElderly?: true,[39m
+[31m     ?       isVIP?: true,[39m
+[31m     ?       specialRequests?: true,[39m
+[31m     ?       registrationDate?: true,[39m
+[31m     ?       status?: true,[39m
+[31m     ?       createdAt?: true,[39m
+[31m     ?       updatedAt?: true,[39m
+[31m     ?       event?: true,[39m
+[31m     ?       room?: true,[39m
+[31m     ?       preferences?: true,[39m
+[31m     ?       preferredBy?: true,[39m
+[31m     ?       familyMembers?: true,[39m
+[31m     ?       busAssignments?: true,[39m
+[31m     ?       roomAssignments?: true,[39m
+[31m     ?       assignments?: true,[39m
+[31m     ?       _count?: true[39m
+[31m           }[39m
+[31m         },[39m
+[31m         roomAssignments: {[39m
+[31m           include: {[39m
+[31m             attendee: {[39m
+[31m               select: {[39m
+[31m                 id: true,[39m
+[31m                 firstName: true,[39m
+[31m                 lastName: true,[39m
+[31m                 genderType: true[39m
+[31m               }[39m
+[31m             }[39m
+[31m           }[39m
+[31m         },[39m
+[31m         _count: {[39m
+[31m           select: {[39m
+[31m             attendees: true,[39m
+[31m             roomAssignments: true[39m
+[31m           }[39m
+[31m         }[39m
+[31m       },[39m
+[31m       orderBy: [[39m
+[31m         {[39m
+[31m           building: {[39m
+[31m             name: "asc"[39m
+[31m           }[39m
+[31m         },[39m
+[31m         {[39m
+[31m           floor: "asc"[39m
+[31m         },[39m
+[31m         {[39m
+[31m           number: "asc"[39m
+[31m         }[39m
+[31m       ][39m
+[31m     })[39m
+
+[31mUnknown field `genderType` for select statement on model `Attendee`. Available options are marked with ?.[39m
+2025-08-16 21:04:56:456 [31merror[39m: [31mValidation error for updateAccommodation:[39m
+2025-08-16 21:05:43:543 [31merror[39m: [31mValidation error for createAccommodation:[39m
+2025-08-17 20:41:28:4128 [31merror[39m: [31mValidation error for updateAccommodation:[39m
+2025-08-17 21:03:10:310 [31merror[39m: [31mValidation error for createAccommodation:[39m
+2025-08-22 15:56:50:5650 [31merror[39m: [31mError fetching dashboard stats: userId is not defined[39m
+2025-08-22 15:56:50:5650 [31merror[39m: [31mError fetching dashboard stats: userId is not defined[39m

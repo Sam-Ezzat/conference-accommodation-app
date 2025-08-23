@@ -1,0 +1,26 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = require("express");
+const EventController_1 = require("@/controllers/EventController");
+const AttendeeController_1 = require("@/controllers/AttendeeController");
+const AccommodationController_1 = require("@/controllers/AccommodationController");
+const AssignmentController_1 = require("@/controllers/AssignmentController");
+const validation_1 = require("@/middleware/validation");
+const auth_1 = require("@/middleware/auth");
+const errorHandler_1 = require("@/middleware/errorHandler");
+const router = (0, express_1.Router)();
+const eventController = new EventController_1.EventController();
+router.get('/', (0, validation_1.validateQuery)(validation_1.schemas.pagination), (0, errorHandler_1.asyncHandler)(eventController.getEvents.bind(eventController)));
+router.get('/:id', (0, validation_1.validateParams)(validation_1.schemas.id), (0, errorHandler_1.asyncHandler)(eventController.getEvent.bind(eventController)));
+router.post('/', (0, auth_1.requireRole)(['SUPER_ADMIN', 'ORG_ADMIN', 'ORGANIZER']), (0, validation_1.validateBody)(validation_1.schemas.createEvent), (0, errorHandler_1.asyncHandler)(eventController.createEvent.bind(eventController)));
+router.put('/:id', (0, auth_1.requireRole)(['SUPER_ADMIN', 'ORG_ADMIN', 'ORGANIZER']), (0, validation_1.validateParams)(validation_1.schemas.id), (0, validation_1.validateBody)(validation_1.schemas.updateEvent), (0, errorHandler_1.asyncHandler)(eventController.updateEvent.bind(eventController)));
+router.delete('/:id', (0, auth_1.requireRole)(['SUPER_ADMIN', 'ORG_ADMIN']), (0, validation_1.validateParams)(validation_1.schemas.id), (0, errorHandler_1.asyncHandler)(eventController.deleteEvent.bind(eventController)));
+router.get('/:id/statistics', (0, validation_1.validateParams)(validation_1.schemas.id), (0, errorHandler_1.asyncHandler)(eventController.getEventStatistics.bind(eventController)));
+router.get('/:eventId/attendees', (0, validation_1.validateParams)(validation_1.schemas.id), (0, validation_1.validateQuery)(validation_1.schemas.pagination), (0, errorHandler_1.asyncHandler)(AttendeeController_1.AttendeeController.getEventAttendees));
+router.post('/:eventId/attendees', (0, auth_1.requireRole)(['SUPER_ADMIN', 'ORG_ADMIN', 'ORGANIZER', 'ASSISTANT']), (0, validation_1.validateParams)(validation_1.schemas.id), (0, validation_1.validateBody)(validation_1.schemas.createAttendee), (0, errorHandler_1.asyncHandler)(AttendeeController_1.AttendeeController.createEventAttendee));
+router.post('/:eventId/attendees/import', (0, auth_1.requireRole)(['SUPER_ADMIN', 'ORG_ADMIN', 'ORGANIZER']), (0, validation_1.validateParams)(validation_1.schemas.id), (0, errorHandler_1.asyncHandler)(AttendeeController_1.AttendeeController.importEventAttendees));
+router.get('/:eventId/accommodations', (0, validation_1.validateParams)(validation_1.schemas.id), (0, errorHandler_1.asyncHandler)(AccommodationController_1.AccommodationController.getEventAccommodations));
+router.post('/:eventId/accommodations', (0, auth_1.requireRole)(['SUPER_ADMIN', 'ORG_ADMIN', 'ORGANIZER']), (0, validation_1.validateParams)(validation_1.schemas.id), (0, validation_1.validateBody)(validation_1.schemas.createAccommodation), (0, errorHandler_1.asyncHandler)(AccommodationController_1.AccommodationController.createEventAccommodation));
+router.post('/:eventId/auto-assign', (0, auth_1.requireRole)(['SUPER_ADMIN', 'ORG_ADMIN', 'ORGANIZER']), (0, validation_1.validateParams)(validation_1.schemas.id), (0, errorHandler_1.asyncHandler)(AssignmentController_1.AssignmentController.autoAssignEventRooms));
+exports.default = router;
+//# sourceMappingURL=events.js.map
